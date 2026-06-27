@@ -53,5 +53,7 @@ scheme (Nerdbank.GitVersioning). The API exposes the running build at `/api/vers
 # API
 dotnet build apps/gis-api -c Release
 # Web
-cd apps/gis-web && npm run lint && npm run typecheck && npm run build
+cd apps/gis-web && npm run format:check && npm run lint && npm run typecheck && npm run test && npm run build
 ```
+
+Auto-fix formatting with `npm run format`; run tests in watch mode with `npm run test:watch`.

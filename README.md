@@ -65,6 +65,25 @@ docker compose -f infra/docker-compose.yml up --build
 
 Services are routed through Nginx at `http://localhost:80`.
 
+## Deployment
+
+`gis-web` is hosted on **Cloudflare Pages** (Git integration, deploys on push to `main`,
+preview deploys per PR). Project settings:
+
+| Setting | Value |
+|---|---|
+| Root directory | `apps/gis-web` |
+| Build command | `npm run build` |
+| Build output directory | `dist` |
+| Environment | `NODE_VERSION=20` |
+
+The SPA fallback is handled by [`public/_redirects`](apps/gis-web/public/_redirects).
+`gis-api` (Fly.io) and Supabase are not yet deployed — see [architecture.md](docs/architecture.md).
+
+> Cloudflare builds the bundle itself, so the version footer reads `dev` on Pages deploys.
+> Wire the version through by deploying the CI-built artifact (which runs `nbgv`) instead —
+> a later change once the app is past placeholder.
+
 ## Docs
 
 - [Architecture overview](docs/architecture.md)
