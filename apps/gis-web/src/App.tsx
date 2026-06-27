@@ -7,7 +7,9 @@ function App() {
       <main className="p-6">
         <p className="text-gray-500 text-sm">Platform initialising…</p>
       </main>
-      <footer className="px-6 py-4 text-xs text-gray-400">build {__APP_VERSION__}</footer>
+      <footer className="px-6 py-4 text-xs text-gray-400">
+        build {__APP_VERSION__}
+      </footer>
     </div>
   )
 }

@@ -23,9 +23,9 @@ npm run build      # outputs to dist/
 
 ## Key files
 
-| Path | Purpose |
-|---|---|
-| `src/main.tsx` | Application entry point |
-| `src/App.tsx` | Root component |
-| `vite.config.ts` | Build config and dev proxy |
-| `nginx.conf` | SPA routing config for local Docker Compose |
+| Path             | Purpose                                     |
+| ---------------- | ------------------------------------------- |
+| `src/main.tsx`   | Application entry point                     |
+| `src/App.tsx`    | Root component                              |
+| `vite.config.ts` | Build config and dev proxy                  |
+| `nginx.conf`     | SPA routing config for local Docker Compose |
