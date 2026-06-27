@@ -1,0 +1,24 @@
+# .NET
+apps/gis-api/bin/
+apps/gis-api/obj/
+apps/gis-api/*.user
+.vs/
+dotnet/
+
+# Node
+apps/gis-web/node_modules/
+apps/gis-web/dist/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editors
+.idea/
+*.swp
+.vscode/

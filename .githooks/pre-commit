@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+# Auto-regenerates docs/structure.md and stages it, so the tree map is always part
+# of the commit it describes.
+#
+# Git won't run a committed hook until each clone opts in (a security feature), so
+# this is enabled per-clone with a one-time:  ./scripts/dev.sh setup
+# (which sets core.hooksPath=.githooks).
+set -euo pipefail
+
+ROOT="$(git rev-parse --show-toplevel)"
+
+# Never block a commit just because the generator tooling is missing.
+if ! command -v tree >/dev/null 2>&1; then
+  echo "pre-commit: 'tree' not found — skipping structure.md sync (install 'tree' to enable)" >&2
+  exit 0
+fi
+
+"$ROOT/scripts/update-structure.sh" >/dev/null
+git add "$ROOT/docs/structure.md"
