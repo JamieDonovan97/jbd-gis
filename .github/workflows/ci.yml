@@ -15,6 +15,8 @@ jobs:
         working-directory: apps/gis-api
     steps:
       - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0   # Nerdbank.GitVersioning needs full history for git height
 
       - uses: actions/setup-dotnet@v5
         with:
@@ -34,12 +36,19 @@ jobs:
         working-directory: apps/gis-web
     steps:
       - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0   # nbgv needs full history for git height
 
       - uses: actions/setup-node@v6
         with:
           node-version: '20'
           cache: 'npm'
           cache-dependency-path: apps/gis-web/package-lock.json
+
+      # Compute the version from the same root version.json the API uses, so
+      # the web bundle and the API report the identical build.
+      - uses: dotnet/nbgv@v0.5.2
+        id: nbgv
 
       - name: Install
         run: npm ci
@@ -51,6 +60,8 @@ jobs:
         run: npm run typecheck
 
       - name: Build
+        env:
+          VITE_APP_VERSION: ${{ steps.nbgv.outputs.SemVer2 }}
         run: npm run build
 
   docker:
