@@ -11,7 +11,7 @@ interface MapCanvasProps {
 }
 
 // Brisbane — the fallback entry point when geolocation is unavailable.
-const BRISBANE = { longitude: 153.0251, latitude: -27.4698, zoom: 15 }
+const BRISBANE = { longitude: 153.0251, latitude: -27.4698, zoom: 16 }
 
 /** Feature layers currently present in the style (toggled on). */
 function activeFeatureLayers(map: MaplibreMap): string[] {

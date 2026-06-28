@@ -6,6 +6,9 @@ import { arcgisFeatureUrl, type Bbox } from '@/lib/map/layerSources'
 import { LAYER_NODES, type LayerNode } from '../config/layers'
 import { useGisStore } from '../store/gisStore'
 
+// The service's maxRecordCount; from the layers' minZoom a viewport stays under it.
+const RECORD_CAP = 4000
+
 /**
  * Renders the visible layer nodes from the registry. Each node is a vector
  * source queried per-viewport and drawn by geometry — no per-layer code.
@@ -57,13 +60,13 @@ function FeatureLayer({ node }: { node: LayerNode }) {
 
   const query = useQuery({
     queryKey: ['feature', node.id, roundBbox(view?.bbox ?? null)],
-    // Fetch a padded envelope so a small pan still has coverage without a refetch.
     queryFn: () =>
       fetchGeoJson(
         arcgisFeatureUrl(
           node.source.service,
           node.source.layerId,
-          padBbox(view!.bbox),
+          view!.bbox,
+          RECORD_CAP,
         ),
       ),
     enabled: inRange,
@@ -73,17 +76,8 @@ function FeatureLayer({ node }: { node: LayerNode }) {
 
   if (!inRange || !query.data) return null
 
-  const clustered = node.source.geometry === 'point'
-
   return (
-    <Source
-      id={node.id}
-      type="geojson"
-      data={query.data}
-      cluster={clustered}
-      clusterRadius={48}
-      clusterMaxZoom={16}
-    >
+    <Source id={node.id} type="geojson" data={query.data}>
       {featureLayers(node, opacity)}
     </Source>
   )
@@ -96,29 +90,9 @@ function featureLayers(node: LayerNode, opacity: number) {
     case 'point':
       return [
         <Layer
-          key="cluster"
-          id={`${id}-cluster`}
-          type="circle"
-          filter={['has', 'point_count']}
-          paint={{
-            'circle-color': color,
-            'circle-opacity': 0.5 * opacity,
-            'circle-radius': [
-              'step',
-              ['get', 'point_count'],
-              11,
-              25,
-              16,
-              100,
-              22,
-            ],
-          }}
-        />,
-        <Layer
           key="point"
           id={id}
           type="circle"
-          filter={['!', ['has', 'point_count']]}
           paint={{
             'circle-radius': 5,
             'circle-color': color,
@@ -161,18 +135,6 @@ function featureLayers(node: LayerNode, opacity: number) {
           }}
         />,
       ]
-  }
-}
-
-/** Expand a viewport envelope outward so panning has a buffer of loaded data. */
-function padBbox(b: Bbox, factor = 0.35): Bbox {
-  const dx = (b.east - b.west) * factor
-  const dy = (b.north - b.south) * factor
-  return {
-    west: b.west - dx,
-    south: b.south - dy,
-    east: b.east + dx,
-    north: b.north + dy,
   }
 }
 

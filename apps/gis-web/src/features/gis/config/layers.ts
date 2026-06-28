@@ -35,7 +35,8 @@ export const LAYER_GROUPS: readonly LayerGroup[] = [
         id: 'parcels',
         label: 'Parcels',
         defaultVisible: true,
-        minZoom: 15,
+        // Dense in cities; from z16 a viewport stays under the service record cap.
+        minZoom: 16,
         source: {
           service: CADASTRE,
           layerId: 4,
@@ -47,7 +48,7 @@ export const LAYER_GROUPS: readonly LayerGroup[] = [
         id: 'easements',
         label: 'Easements',
         defaultVisible: false,
-        minZoom: 15,
+        minZoom: 16,
         source: {
           service: CADASTRE,
           layerId: 9,
@@ -78,7 +79,8 @@ export const LAYER_GROUPS: readonly LayerGroup[] = [
         id: 'sw-manholes',
         label: 'Manholes',
         defaultVisible: true,
-        minZoom: 14,
+        // Points only resolve once zoomed in, so they never carpet the view.
+        minZoom: 17,
         source: {
           service: `${BCC}/Stormwater_Manhole_Existing/FeatureServer`,
           layerId: 0,
@@ -90,7 +92,7 @@ export const LAYER_GROUPS: readonly LayerGroup[] = [
         id: 'sw-waterbodies',
         label: 'Waterbodies',
         defaultVisible: false,
-        minZoom: 13,
+        minZoom: 16,
         source: {
           service: `${BCC}/Stormwater_Waterbody_Existing/FeatureServer`,
           layerId: 0,
