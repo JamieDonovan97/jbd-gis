@@ -1,5 +1,9 @@
 # features
 
-One folder per view, each owning its components, state, config, and hooks.
+One folder per view; each owns its components, state, config, and hooks.
 
-A feature never imports another feature; shared code moves to [`components/`](../components/) or [`lib/`](../lib/). See [`gis/`](gis/).
+| Path   | Holds                         |
+| ------ | ----------------------------- |
+| `gis/` | The full-screen GIS map view. |
+
+Features never import each other; shared code moves to `components/` or `lib/`.

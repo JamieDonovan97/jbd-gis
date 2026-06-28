@@ -1,26 +1,10 @@
 # infra
 
-Docker Compose setup for local integration. Not used in production — see [ADR-003](../docs/adr/003-infra-layout.md).
+Local integration via Docker Compose. Not used in production — see [ADR-003](../docs/adr/003-infra-layout.md).
 
-## Usage
-
-From the repo root via `scripts/dev.sh`:
-
-```bash
-./scripts/dev.sh up      # full stack at http://localhost:80
-./scripts/dev.sh db      # Postgres only
-./scripts/dev.sh down
-```
-
-Or directly:
-
-```bash
-docker compose -f infra/docker-compose.yml up --build
-```
-
-## Contents
-
-| Path | Purpose |
+| Path | Holds |
 |---|---|
-| `docker-compose.yml` | Full local stack |
-| `nginx/nginx.conf` | Edge proxy for local integration |
+| `docker-compose.yml` | The full local stack. |
+| `nginx/nginx.conf` | Edge proxy for local integration. |
+
+Run via [`scripts/dev.sh`](../scripts/).

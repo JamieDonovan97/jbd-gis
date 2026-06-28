@@ -1,3 +1,9 @@
 # app
 
-The application platform: the cross-cutting providers, the router, and the shell that views render into. Add a view by adding a route; global chrome (e.g. a top menu) belongs in the shell.
+The application platform — the shell and cross-cutting wiring.
+
+| Path            | Holds                                                  |
+| --------------- | ------------------------------------------------------ |
+| `shell/`        | The frame views render into; where global chrome goes. |
+| `providers.tsx` | Query, theme, and tooltip providers.                   |
+| `router.tsx`    | The route tree.                                        |

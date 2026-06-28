@@ -1,3 +1,9 @@
 # lib
 
-Framework-agnostic helpers, owned by no view: the basemap and layer-source registries (`map/`) and shared utilities.
+Framework-agnostic helpers, owned by no view.
+
+| Path       | Holds                                |
+| ---------- | ------------------------------------ |
+| `map/`     | Basemap and layer-source registries. |
+| `api/`     | Server access — address geocoding.   |
+| `utils.ts` | Class-name helper (`cn`).            |

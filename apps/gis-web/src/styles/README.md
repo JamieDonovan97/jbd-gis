@@ -1,3 +1,10 @@
 # styles
 
-The design tokens the app is coloured and shaped from, in two layers: raw primitive scales and the semantic tokens components consume as Tailwind utilities. Recolour the app by editing the semantic layer.
+Design tokens, in two layers.
+
+| File         | Holds                                     |
+| ------------ | ----------------------------------------- |
+| `tokens.css` | Primitive scales — raw colours and radii. |
+| `themes.css` | Semantic tokens per `[data-theme]`.       |
+
+Recolour the app from the semantic layer.
