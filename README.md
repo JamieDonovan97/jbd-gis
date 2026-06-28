@@ -67,22 +67,22 @@ Services are routed through Nginx at `http://localhost:80`.
 
 ## Deployment
 
-`gis-web` is hosted on **Cloudflare Pages** (Git integration, deploys on push to `main`,
-preview deploys per PR). Project settings:
+`gis-web` deploys to **Cloudflare Pages via Direct Upload from CI** — GitHub Actions
+builds the bundle (stamping the real version with nbgv) and pushes it to Pages with
+Wrangler. No Cloudflare↔GitHub app or repo access is granted; CI/CD stays in this repo.
 
-| Setting | Value |
+The [`deploy`](.github/workflows/deploy.yml) workflow runs on push to `main` and is a
+**no-op until** these are set:
+
+| Needs | Where |
 |---|---|
-| Root directory | `apps/gis-web` |
-| Build command | `npm run build` |
-| Build output directory | `dist` |
-| Environment | `NODE_VERSION=20` |
+| `CLOUDFLARE_API_TOKEN` | GitHub repo secret — token scoped to **Account › Cloudflare Pages › Edit** |
+| `CLOUDFLARE_ACCOUNT_ID` | GitHub repo secret — from the Cloudflare dashboard sidebar |
+| Pages project `jbd-gis` | Created once in Cloudflare: Workers & Pages → Create → Pages → **Upload assets** (Direct Upload), no Git connection |
 
-The SPA fallback is handled by [`public/_redirects`](apps/gis-web/public/_redirects).
-`gis-api` (Fly.io) and Supabase are not yet deployed — see [architecture.md](docs/architecture.md).
-
-> Cloudflare builds the bundle itself, so the version footer reads `dev` on Pages deploys.
-> Wire the version through by deploying the CI-built artifact (which runs `nbgv`) instead —
-> a later change once the app is past placeholder.
+SPA fallback is handled by [`public/_redirects`](apps/gis-web/public/_redirects). Attach a
+custom domain in the Pages project → Custom domains. `gis-api` (Fly.io) and Supabase are
+not yet deployed — see [architecture.md](docs/architecture.md).
 
 ## Docs
 
