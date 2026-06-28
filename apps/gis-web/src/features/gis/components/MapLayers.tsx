@@ -1,87 +1,49 @@
-import { useQuery } from '@tanstack/react-query'
+import { keepPreviousData, useQuery } from '@tanstack/react-query'
 import { Layer, Source, useMap } from '@vis.gl/react-maplibre'
 import type { FeatureCollection } from 'geojson'
 import { useEffect, useState } from 'react'
-import {
-  arcgisFeatureUrl,
-  type Bbox,
-  type FeatureSource,
-} from '@/lib/map/layerSources'
-import { LAYERS, type LayerDefinition } from '../config/layers'
+import { arcgisFeatureUrl, type Bbox } from '@/lib/map/layerSources'
+import { LAYER_NODES, type LayerNode } from '../config/layers'
 import { useGisStore } from '../store/gisStore'
 
 /**
- * Renders the visible layers from the registry. Each layer's source kind
- * decides how it maps to MapLibre sources and layers — no per-layer code.
+ * Renders the visible layer nodes from the registry. Each node is a vector
+ * source queried per-viewport and drawn by geometry — no per-layer code.
+ * Point layers are clustered so dense data stays legible.
  */
 export function MapLayers() {
   const visibility = useGisStore((s) => s.layerVisibility)
   return (
     <>
-      {LAYERS.map((layer) =>
-        visibility[layer.id] ? (
-          <LayerView key={layer.id} layer={layer} />
-        ) : null,
-      )}
+      {LAYER_NODES.filter((node) => visibility[node.id]).map((node) => (
+        <FeatureLayer key={node.id} node={node} />
+      ))}
     </>
   )
 }
 
-function LayerView({ layer }: { layer: LayerDefinition }) {
-  const { source } = layer
-  switch (source.kind) {
-    case 'raster':
-      return (
-        <Source
-          id={layer.id}
-          type="raster"
-          tiles={source.tiles}
-          tileSize={source.tileSize ?? 256}
-          attribution={source.attribution}
-        >
-          <Layer id={layer.id} type="raster" />
-        </Source>
-      )
-    case 'bbox-raster':
-      return (
-        <Source
-          id={layer.id}
-          type="raster"
-          tiles={[source.tile]}
-          tileSize={256}
-          attribution={source.attribution}
-        >
-          <Layer
-            id={layer.id}
-            type="raster"
-            paint={{ 'raster-opacity': 0.85 }}
-          />
-        </Source>
-      )
-    case 'feature':
-      return <FeatureLayerView id={layer.id} source={source} />
-  }
+interface MapView {
+  bbox: Bbox
+  zoom: number
 }
 
-function FeatureLayerView({
-  id,
-  source,
-}: {
-  id: string
-  source: FeatureSource
-}) {
+function FeatureLayer({ node }: { node: LayerNode }) {
   const { main } = useMap()
-  const [bbox, setBbox] = useState<Bbox | null>(null)
+  const opacity = useGisStore((s) => s.layerOpacity[node.id] ?? 1)
+  const [view, setView] = useState<MapView | null>(null)
 
   useEffect(() => {
     if (!main) return
     const update = () => {
       const b = main.getBounds()
-      setBbox({
-        west: b.getWest(),
-        south: b.getSouth(),
-        east: b.getEast(),
-        north: b.getNorth(),
+      setView({
+        bbox: {
+          west: b.getWest(),
+          south: b.getSouth(),
+          east: b.getEast(),
+          north: b.getNorth(),
+        },
+        zoom: main.getZoom(),
       })
     }
     update()
@@ -91,69 +53,134 @@ function FeatureLayerView({
     }
   }, [main])
 
+  const inRange = view !== null && view.zoom >= (node.minZoom ?? 0)
+
   const query = useQuery({
-    queryKey: ['feature', id, roundBbox(bbox)],
+    queryKey: ['feature', node.id, roundBbox(view?.bbox ?? null)],
+    // Fetch a padded envelope so a small pan still has coverage without a refetch.
     queryFn: () =>
       fetchGeoJson(
-        arcgisFeatureUrl(source.service, source.layerId, bbox as Bbox),
+        arcgisFeatureUrl(
+          node.source.service,
+          node.source.layerId,
+          padBbox(view!.bbox),
+        ),
       ),
-    enabled: bbox !== null,
+    enabled: inRange,
+    placeholderData: keepPreviousData, // keep features on screen while the next area loads
     staleTime: 60_000,
   })
 
-  if (!query.data) return null
+  if (!inRange || !query.data) return null
+
+  const clustered = node.source.geometry === 'point'
 
   return (
-    <Source id={id} type="geojson" data={query.data}>
-      {featureLayers(id, source)}
+    <Source
+      id={node.id}
+      type="geojson"
+      data={query.data}
+      cluster={clustered}
+      clusterRadius={48}
+      clusterMaxZoom={16}
+    >
+      {featureLayers(node, opacity)}
     </Source>
   )
 }
 
-function featureLayers(id: string, source: FeatureSource) {
+function featureLayers(node: LayerNode, opacity: number) {
+  const { id, source } = node
+  const color = source.color
   switch (source.geometry) {
     case 'point':
-      return (
+      return [
         <Layer
+          key="cluster"
+          id={`${id}-cluster`}
+          type="circle"
+          filter={['has', 'point_count']}
+          paint={{
+            'circle-color': color,
+            'circle-opacity': 0.5 * opacity,
+            'circle-radius': [
+              'step',
+              ['get', 'point_count'],
+              11,
+              25,
+              16,
+              100,
+              22,
+            ],
+          }}
+        />,
+        <Layer
+          key="point"
           id={id}
           type="circle"
+          filter={['!', ['has', 'point_count']]}
           paint={{
             'circle-radius': 5,
-            'circle-color': source.color,
-            'circle-stroke-width': 1,
+            'circle-color': color,
+            'circle-opacity': opacity,
+            'circle-stroke-width': 1.5,
             'circle-stroke-color': '#ffffff',
+            'circle-stroke-opacity': opacity,
           }}
-        />
-      )
+        />,
+      ]
     case 'line':
-      return (
+      return [
         <Layer
+          key="line"
           id={id}
           type="line"
-          paint={{ 'line-color': source.color, 'line-width': 2 }}
-        />
-      )
+          paint={{
+            'line-color': color,
+            'line-width': 2.5,
+            'line-opacity': opacity,
+          }}
+        />,
+      ]
     case 'fill':
-      return (
-        <>
-          <Layer
-            id={id}
-            type="fill"
-            paint={{ 'fill-color': source.color, 'fill-opacity': 0.25 }}
-          />
-          <Layer
-            id={`${id}-outline`}
-            type="line"
-            paint={{ 'line-color': source.color, 'line-width': 1.5 }}
-          />
-        </>
-      )
+      return [
+        <Layer
+          key="fill"
+          id={id}
+          type="fill"
+          paint={{ 'fill-color': color, 'fill-opacity': 0.12 * opacity }}
+        />,
+        <Layer
+          key="outline"
+          id={`${id}-outline`}
+          type="line"
+          paint={{
+            'line-color': color,
+            'line-width': 1.8,
+            'line-opacity': opacity,
+          }}
+        />,
+      ]
   }
 }
 
+/** Expand a viewport envelope outward so panning has a buffer of loaded data. */
+function padBbox(b: Bbox, factor = 0.35): Bbox {
+  const dx = (b.east - b.west) * factor
+  const dy = (b.north - b.south) * factor
+  return {
+    west: b.west - dx,
+    south: b.south - dy,
+    east: b.east + dx,
+    north: b.north + dy,
+  }
+}
+
+// ~100 m precision: tracks the view closely so coverage follows the map, while
+// still de-duplicating sub-block jitter.
 function roundBbox(b: Bbox | null): string {
   if (!b) return 'none'
-  const r = (n: number) => n.toFixed(2)
+  const r = (n: number) => n.toFixed(3)
   return `${r(b.west)},${r(b.south)},${r(b.east)},${r(b.north)}`
 }
 

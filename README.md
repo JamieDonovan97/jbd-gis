@@ -67,22 +67,7 @@ Services are routed through Nginx at `http://localhost:80`.
 
 ## Deployment
 
-`gis-web` deploys to **Cloudflare Pages via Direct Upload from CI** — GitHub Actions
-builds the bundle (stamping the real version with nbgv) and pushes it to Pages with
-Wrangler. No Cloudflare↔GitHub app or repo access is granted; CI/CD stays in this repo.
-
-The [`deploy`](.github/workflows/deploy.yml) workflow runs on push to `main` and is a
-**no-op until** these are set:
-
-| Needs | Where |
-|---|---|
-| `CLOUDFLARE_API_TOKEN` | GitHub repo secret — token scoped to **Account › Cloudflare Pages › Edit** |
-| `CLOUDFLARE_ACCOUNT_ID` | GitHub repo secret — from the Cloudflare dashboard sidebar |
-| Pages project `jbd-gis` | Created once in Cloudflare: Workers & Pages → Create → Pages → **Upload assets** (Direct Upload), no Git connection |
-
-SPA fallback is handled by [`public/_redirects`](apps/gis-web/public/_redirects). Attach a
-custom domain in the Pages project → Custom domains. `gis-api` (Fly.io) and Supabase are
-not yet deployed — see [architecture.md](docs/architecture.md).
+`gis-web` builds in CI and deploys to Cloudflare Pages via Direct Upload on push to `main` ([`deploy.yml`](.github/workflows/deploy.yml)). `gis-api` (Fly.io) and Supabase are not yet deployed — see [architecture.md](docs/architecture.md).
 
 ## Docs
 

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { LAYERS } from './layers'
+import { LAYER_GROUPS, LAYER_NODES } from './layers'
 import { TOOLS } from './tools'
 
 // Guards the config-driven extension points: a malformed registry entry fails
@@ -15,28 +15,25 @@ describe('config registries', () => {
     }
   })
 
-  it('layers have unique ids and required fields', () => {
-    const ids = LAYERS.map((layer) => layer.id)
+  it('layer groups have unique ids and a provider', () => {
+    const ids = LAYER_GROUPS.map((group) => group.id)
     expect(new Set(ids).size).toBe(ids.length)
-    for (const layer of LAYERS) {
-      expect(layer.label).toBeTruthy()
-      expect(typeof layer.defaultVisible).toBe('boolean')
+    for (const group of LAYER_GROUPS) {
+      expect(group.label).toBeTruthy()
+      expect(group.provider).toBeTruthy()
+      expect(group.layers.length).toBeGreaterThan(0)
     }
   })
 
-  it('every layer declares a valid source', () => {
-    for (const { source } of LAYERS) {
-      if (source.kind === 'raster') {
-        expect(source.tiles.length).toBeGreaterThan(0)
-      } else if (source.kind === 'bbox-raster') {
-        expect(source.tile).toContain('{bbox-epsg-3857}')
-      } else if (source.kind === 'feature') {
-        expect(source.service).toBeTruthy()
-        expect(typeof source.layerId).toBe('number')
-        expect(['point', 'line', 'fill']).toContain(source.geometry)
-      } else {
-        throw new Error(`unknown source kind: ${JSON.stringify(source)}`)
-      }
+  it('every layer node has a unique id and a valid feature source', () => {
+    const ids = LAYER_NODES.map((node) => node.id)
+    expect(new Set(ids).size).toBe(ids.length)
+    for (const { source, label } of LAYER_NODES) {
+      expect(label).toBeTruthy()
+      expect(source.service).toMatch(/^https:\/\//)
+      expect(typeof source.layerId).toBe('number')
+      expect(['point', 'line', 'fill']).toContain(source.geometry)
+      expect(source.color).toMatch(/^#/)
     }
   })
 })

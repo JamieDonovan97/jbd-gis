@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { DEFAULT_BASEMAP, type BasemapId } from '@/lib/map/basemaps'
-import { LAYERS } from '../config/layers'
+import { LAYER_GROUPS, LAYER_NODES } from '../config/layers'
 import type { ToolId } from '../config/tools'
 
 export interface SelectedFeature {
@@ -15,17 +15,21 @@ interface GisState {
   selectedFeature: SelectedFeature | null
   basemapId: BasemapId
   layerVisibility: Record<string, boolean>
+  layerOpacity: Record<string, number>
 
   toggleTool: (tool: ToolId) => void
   closeTool: () => void
   selectFeature: (feature: SelectedFeature | null) => void
   setBasemap: (id: BasemapId) => void
   toggleLayer: (id: string) => void
+  setLayerOpacity: (id: string, value: number) => void
+  toggleGroup: (groupId: string) => void
 }
 
-const initialLayerVisibility = Object.fromEntries(
-  LAYERS.map((layer) => [layer.id, layer.defaultVisible]),
+const initialVisibility = Object.fromEntries(
+  LAYER_NODES.map((n) => [n.id, n.defaultVisible]),
 )
+const initialOpacity = Object.fromEntries(LAYER_NODES.map((n) => [n.id, 1]))
 
 /**
  * Client state for the GIS view. Server data is TanStack Query's concern; this
@@ -35,7 +39,8 @@ export const useGisStore = create<GisState>((set, get) => ({
   activeTool: null,
   selectedFeature: null,
   basemapId: DEFAULT_BASEMAP,
-  layerVisibility: initialLayerVisibility,
+  layerVisibility: initialVisibility,
+  layerOpacity: initialOpacity,
 
   toggleTool: (tool) =>
     set({ activeTool: get().activeTool === tool ? null : tool }),
@@ -49,4 +54,15 @@ export const useGisStore = create<GisState>((set, get) => ({
         [id]: !state.layerVisibility[id],
       },
     })),
+  setLayerOpacity: (id, value) =>
+    set((state) => ({ layerOpacity: { ...state.layerOpacity, [id]: value } })),
+  toggleGroup: (groupId) =>
+    set((state) => {
+      const group = LAYER_GROUPS.find((g) => g.id === groupId)
+      if (!group) return state
+      const allOn = group.layers.every((l) => state.layerVisibility[l.id])
+      const layerVisibility = { ...state.layerVisibility }
+      for (const layer of group.layers) layerVisibility[layer.id] = !allOn
+      return { layerVisibility }
+    }),
 }))

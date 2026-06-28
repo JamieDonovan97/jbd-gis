@@ -1,5 +1,5 @@
 import { Map, type MapLayerMouseEvent } from '@vis.gl/react-maplibre'
-import type { StyleSpecification } from 'maplibre-gl'
+import type { Map as MaplibreMap, StyleSpecification } from 'maplibre-gl'
 import type { ReactNode } from 'react'
 import { FEATURE_LAYER_IDS } from '../config/layers'
 import type { SelectedFeature } from '../store/gisStore'
@@ -11,16 +11,21 @@ interface MapCanvasProps {
 }
 
 // Brisbane — the fallback entry point when geolocation is unavailable.
-const BRISBANE = { longitude: 153.0251, latitude: -27.4698, zoom: 11 }
+const BRISBANE = { longitude: 153.0251, latitude: -27.4698, zoom: 15 }
+
+/** Feature layers currently present in the style (toggled on). */
+function activeFeatureLayers(map: MaplibreMap): string[] {
+  return FEATURE_LAYER_IDS.filter((id) => map.getLayer(id))
+}
 
 /** The full-viewport map — the backing layer everything else floats over. */
 export function MapCanvas({ mapStyle, onSelect, children }: MapCanvasProps) {
   function handleClick(e: MapLayerMouseEvent) {
-    const rendered = e.target.queryRenderedFeatures(e.point)
-    // Prefer our own feature layers; fall back to any feature with attributes.
-    const hit =
-      rendered.find((f) => FEATURE_LAYER_IDS.includes(f.layer.id)) ??
-      rendered.find((f) => f.properties && Object.keys(f.properties).length > 0)
+    // Only our data layers are selectable — never basemap cartography.
+    const layers = activeFeatureLayers(e.target)
+    const hit = layers.length
+      ? e.target.queryRenderedFeatures(e.point, { layers })[0]
+      : undefined
     onSelect(
       hit
         ? {
@@ -32,25 +37,22 @@ export function MapCanvas({ mapStyle, onSelect, children }: MapCanvasProps) {
     )
   }
 
+  function handleMouseMove(e: MapLayerMouseEvent) {
+    const layers = activeFeatureLayers(e.target)
+    const over =
+      layers.length > 0 &&
+      e.target.queryRenderedFeatures(e.point, { layers }).length > 0
+    e.target.getCanvas().style.cursor = over ? 'pointer' : ''
+  }
+
   return (
     <Map
       id="main"
       initialViewState={BRISBANE}
       mapStyle={mapStyle}
       onClick={handleClick}
-      onLoad={(e) => {
-        // Centre on the user's location if granted; otherwise stay on Brisbane.
-        navigator.geolocation?.getCurrentPosition(
-          (pos) =>
-            e.target.flyTo({
-              center: [pos.coords.longitude, pos.coords.latitude],
-              zoom: 13,
-            }),
-          undefined,
-          { timeout: 5000 },
-        )
-      }}
-      attributionControl={{ compact: true }}
+      onMouseMove={handleMouseMove}
+      attributionControl={false}
       style={{ position: 'absolute', inset: 0 }}
     >
       {children}

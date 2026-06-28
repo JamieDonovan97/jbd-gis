@@ -39,7 +39,7 @@ Tools, layers, and basemaps are registries of objects, rendered by generic compo
 | Registry | File | Shape |
 |---|---|---|
 | Tools | `src/features/gis/config/tools.ts` | `{ id, icon, label, panelId }` |
-| Layers | `src/features/gis/config/layers.ts` | a typed source (`raster` / `bbox-raster` / `feature`), rendered generically by `MapLayers` |
+| Layers | `src/features/gis/config/layers.ts` | a provider → group → node tree; each node is a vector source rendered generically by `MapLayers` |
 | Basemaps | `src/lib/map/basemaps.ts` | `{ id, label, provider, styleFor(themeMode) }` |
 
 Adding a tool is adding an object. No component is edited to extend a surface.
