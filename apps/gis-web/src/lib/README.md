@@ -1,3 +1,3 @@
 # lib
 
-Framework-agnostic helpers, owned by no view: the basemap style registry and server access through TanStack Query.
+Framework-agnostic helpers, owned by no view: the basemap and layer-source registries (`map/`) and shared utilities.

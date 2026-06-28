@@ -10,19 +10,38 @@ export const CARTO_LIGHT =
 export const CARTO_DARK =
   'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json'
 
+const ESRI = 'https://services.arcgisonline.com/ArcGIS/rest/services'
+
+function esriTiles(service: string): string[] {
+  return [`${ESRI}/${service}/MapServer/tile/{z}/{y}/{x}`]
+}
+
+/** Satellite imagery with transparent road/place label overlays on top. */
 export function buildImageryStyle(): StyleSpecification {
   return {
     version: 8,
     sources: {
       imagery: {
         type: 'raster',
-        tiles: [
-          'https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-        ],
+        tiles: esriTiles('World_Imagery'),
         tileSize: 256,
         attribution: 'Imagery © Esri, Maxar, Earthstar Geographics',
       },
+      transportation: {
+        type: 'raster',
+        tiles: esriTiles('Reference/World_Transportation'),
+        tileSize: 256,
+      },
+      places: {
+        type: 'raster',
+        tiles: esriTiles('Reference/World_Boundaries_and_Places'),
+        tileSize: 256,
+      },
     },
-    layers: [{ id: 'imagery', type: 'raster', source: 'imagery' }],
+    layers: [
+      { id: 'imagery', type: 'raster', source: 'imagery' },
+      { id: 'transportation', type: 'raster', source: 'transportation' },
+      { id: 'places', type: 'raster', source: 'places' },
+    ],
   }
 }

@@ -23,4 +23,20 @@ describe('config registries', () => {
       expect(typeof layer.defaultVisible).toBe('boolean')
     }
   })
+
+  it('every layer declares a valid source', () => {
+    for (const { source } of LAYERS) {
+      if (source.kind === 'raster') {
+        expect(source.tiles.length).toBeGreaterThan(0)
+      } else if (source.kind === 'bbox-raster') {
+        expect(source.tile).toContain('{bbox-epsg-3857}')
+      } else if (source.kind === 'feature') {
+        expect(source.service).toBeTruthy()
+        expect(typeof source.layerId).toBe('number')
+        expect(['point', 'line', 'fill']).toContain(source.geometry)
+      } else {
+        throw new Error(`unknown source kind: ${JSON.stringify(source)}`)
+      }
+    }
+  })
 })

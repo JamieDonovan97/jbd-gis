@@ -4,7 +4,6 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Separator } from '@/components/ui/separator'
-import { useVersion } from '@/lib/api/version'
 import { cn } from '@/lib/utils'
 import { LAYERS } from '../config/layers'
 import { useGisStore, type SelectedFeature } from '../store/gisStore'
@@ -32,7 +31,7 @@ export function InspectorPanel() {
 
   return (
     <GlassPanel className="flex h-full w-80 flex-col">
-      <header className="flex items-center justify-between px-4 py-3">
+      <header className="flex h-14 shrink-0 items-center justify-between px-4">
         <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
           {panel.title}
         </h2>
@@ -136,21 +135,10 @@ function FeatureBody({ feature }: { feature: SelectedFeature }) {
 }
 
 function RestingBody() {
-  const version = useVersion()
   return (
-    <div className="flex h-full flex-col items-start gap-4">
-      <div className="flex items-center gap-2 text-muted-foreground">
-        <MousePointerSquareDashed className="size-4" />
-        <p className="text-sm">Select a feature on the map to inspect it.</p>
-      </div>
-      <Badge variant="neutral">
-        api{' '}
-        {version.data
-          ? `v${version.data.version}`
-          : version.isError
-            ? 'offline'
-            : '…'}
-      </Badge>
+    <div className="flex items-center gap-2 text-muted-foreground">
+      <MousePointerSquareDashed className="size-4" />
+      <p className="text-sm">Select a feature on the map to inspect it.</p>
     </div>
   )
 }
