@@ -2,7 +2,7 @@
 
 Geospatial platform for civil infrastructure data — PostGIS spatial queries, ASP.NET Core 10 API, React SPA.
 
-> **Status: scaffold.** The structure, tooling, and deployment shape are in place; application code is not yet built. The PostGIS data layer (API) and the UI component layer (`shadcn/ui`) are planned and will be added as features land.
+> **Status: early.** The web client — a full-screen map with a layered UI, reading layer data directly from external GIS services — is built. The API is minimal (health, version); PostGIS is used only where we store data or run server-side logic.
 
 ## Stack
 

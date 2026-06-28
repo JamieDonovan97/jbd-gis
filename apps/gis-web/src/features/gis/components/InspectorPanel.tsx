@@ -31,7 +31,7 @@ export function InspectorPanel() {
 
   return (
     <GlassPanel className="flex h-full w-80 flex-col">
-      <header className="flex items-center justify-between px-4 py-3">
+      <header className="flex h-14 shrink-0 items-center justify-between px-4">
         <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
           {panel.title}
         </h2>

@@ -5,6 +5,7 @@ import { useTheme } from '@/theme/useTheme'
 import { InspectorPanel } from './components/InspectorPanel'
 import { MapCanvas } from './components/MapCanvas'
 import { MapControls } from './components/MapControls'
+import { MapLayers } from './components/MapLayers'
 import { ToolDock } from './components/ToolDock'
 import { ViewControls } from './components/ViewControls'
 import { useGisStore } from './store/gisStore'
@@ -28,7 +29,9 @@ export function GisView() {
   return (
     <MapProvider>
       <div className="relative h-full w-full overflow-hidden">
-        <MapCanvas mapStyle={mapStyle} onSelect={selectFeature} />
+        <MapCanvas mapStyle={mapStyle} onSelect={selectFeature}>
+          <MapLayers />
+        </MapCanvas>
 
         <div className="absolute left-4 top-4">
           <ToolDock activeTool={activeTool} onToolClick={toggleTool} />
