@@ -1,0 +1,59 @@
+/*
+ * Semantic tokens — the contract components consume (via Tailwind utilities).
+ * A theme is one set of these values under a [data-theme] selector.
+ * Light is also applied at :root so the app renders before the theme is set.
+ * See docs/design-system.md.
+ */
+:root,
+[data-theme='light'] {
+  --background: var(--slate-100);
+  --foreground: var(--slate-900);
+
+  --surface: var(--white);
+  --surface-foreground: var(--slate-900);
+
+  --muted: var(--slate-100);
+  --muted-foreground: var(--slate-500);
+
+  --border: var(--slate-200);
+  --ring: var(--blue-500);
+
+  --primary: var(--blue-600);
+  --primary-foreground: var(--white);
+
+  --accent: var(--blue-600);
+  --accent-foreground: var(--white);
+
+  /* Frosted-glass surface */
+  --glass-bg: color-mix(in srgb, var(--white) 55%, transparent);
+  --glass-border: color-mix(in srgb, var(--white) 55%, transparent);
+  --glass-foreground: var(--slate-900);
+  --glass-shadow: 0 8px 30px rgb(2 6 23 / 0.12);
+
+  --radius: var(--radius-xl);
+}
+
+[data-theme='dark'] {
+  --background: var(--slate-950);
+  --foreground: var(--slate-100);
+
+  --surface: var(--slate-900);
+  --surface-foreground: var(--slate-100);
+
+  --muted: var(--slate-800);
+  --muted-foreground: var(--slate-400);
+
+  --border: color-mix(in srgb, var(--white) 12%, transparent);
+  --ring: var(--blue-400);
+
+  --primary: var(--blue-500);
+  --primary-foreground: var(--white);
+
+  --accent: var(--blue-400);
+  --accent-foreground: var(--slate-950);
+
+  --glass-bg: color-mix(in srgb, var(--slate-950) 42%, transparent);
+  --glass-border: color-mix(in srgb, var(--white) 12%, transparent);
+  --glass-foreground: var(--slate-100);
+  --glass-shadow: 0 8px 30px rgb(0 0 0 / 0.45);
+}
