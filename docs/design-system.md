@@ -51,7 +51,7 @@ src/
   app/        shell, router, providers — the application platform
   features/   one folder per feature; self-contained
   components/ ui/ (primitives) · glass/ (GlassPanel)
-  lib/        map/ · api/ — framework-agnostic helpers
+  lib/        map/ · utils — framework-agnostic helpers
   theme/      ThemeProvider, theme registry
   styles/     tokens.css · themes.css · index.css
 ```
@@ -60,7 +60,7 @@ A feature owns its components, config, store slice, and hooks under `features/<n
 
 ## State
 
-- **Server state** — TanStack Query (`src/lib/api/`).
+- **Server state** — TanStack Query, over external services (e.g. ArcGIS REST) read directly.
 - **Client/UI state** — Zustand, one slice per domain (`src/features/gis/store/`).
 - **Theme** — `ThemeProvider`, persisted.
 

@@ -4,12 +4,12 @@
 
 ```
 Cloudflare Pages (gis-web)
-  ├── → Supabase PostgREST    (direct reads — spatial queries, feature data)
-  └── → Fly.io gis-api        (computation — processing, analysis)
+  ├── → External layer services  (basemaps, tiles, REST/WMS — read directly)
+  └── → Fly.io gis-api           (computation; storage for data we own)
                └── → Supabase PostgreSQL + PostGIS
 ```
 
-The frontend calls Supabase directly for reads where no server-side computation is required. The API exists for logic, not as a data proxy.
+Layer data is read directly from its source, the same way the imagery basemap is. Supabase and the API come in only for data we own or server-side logic — not to proxy public sources.
 
 ## Local topology (Docker Compose)
 
@@ -26,8 +26,8 @@ Postgres runs locally via the `postgis/postgis` Docker image. The frontend dev s
 
 | Service | Role |
 |---|---|
-| `gis-web` | React SPA. Direct Supabase access for reads; calls `gis-api` for computation. |
+| `gis-web` | React SPA. Reads layer data directly from its source; uses `gis-api`/Supabase only for owned data or computation. |
 | `gis-api` | ASP.NET Core 10. Computation and analysis. Not a CRUD proxy. |
-| Supabase | Managed PostgreSQL + PostGIS. Serves the API and exposes PostgREST for direct client reads. |
+| Supabase | Managed PostgreSQL + PostGIS for data we own. Backs the API; can expose PostgREST for direct reads of owned data. |
 | Fly.io | Hosts `gis-api`. Managed ingress and TLS. |
 | Cloudflare Pages | Hosts `gis-web`. CDN delivery. |
