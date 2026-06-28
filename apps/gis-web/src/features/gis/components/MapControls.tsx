@@ -1,12 +1,12 @@
 import { useMap } from '@vis.gl/react-maplibre'
-import { LocateFixed, Minus, Navigation, Plus } from 'lucide-react'
+import { Minus, Navigation, Plus } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { GlassPanel } from '@/components/glass/GlassPanel'
 import { Button } from '@/components/ui/button'
 
 /**
- * Map navigation: zoom, a compass that tracks bearing and resets north and
- * pitch on click, and a button to recentre on the user's location.
+ * Map navigation: zoom, and a compass that tracks bearing and resets north and
+ * pitch on click.
  */
 export function MapControls() {
   const { main } = useMap()
@@ -21,15 +21,6 @@ export function MapControls() {
       main.off('rotate', sync)
     }
   }, [main])
-
-  function locate() {
-    navigator.geolocation?.getCurrentPosition((pos) =>
-      main?.flyTo({
-        center: [pos.coords.longitude, pos.coords.latitude],
-        zoom: 14,
-      }),
-    )
-  }
 
   return (
     <GlassPanel className="flex flex-col p-1">
@@ -60,14 +51,6 @@ export function MapControls() {
           className="text-accent"
           style={{ transform: `rotate(${-bearing}deg)` }}
         />
-      </Button>
-      <Button
-        variant="ghost"
-        size="icon"
-        aria-label="My location"
-        onClick={locate}
-      >
-        <LocateFixed />
       </Button>
     </GlassPanel>
   )

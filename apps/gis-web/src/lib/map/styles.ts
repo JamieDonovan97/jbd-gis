@@ -39,7 +39,19 @@ export function buildImageryStyle(): StyleSpecification {
       },
     },
     layers: [
-      { id: 'imagery', type: 'raster', source: 'imagery' },
+      // White paper beneath so the faded aerial reads as a bright CAD underlay.
+      {
+        id: 'paper',
+        type: 'background',
+        paint: { 'background-color': '#ffffff' },
+      },
+      {
+        id: 'imagery',
+        type: 'raster',
+        source: 'imagery',
+        // ~+20% brightness, ~50% transparency — keeps overlaid vector data legible.
+        paint: { 'raster-opacity': 0.5, 'raster-brightness-min': 0.2 },
+      },
       { id: 'transportation', type: 'raster', source: 'transportation' },
       { id: 'places', type: 'raster', source: 'places' },
     ],

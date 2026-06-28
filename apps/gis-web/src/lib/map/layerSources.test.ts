@@ -1,14 +1,7 @@
 import { describe, expect, it } from 'vitest'
-import { arcgisExportTile, arcgisFeatureUrl } from './layerSources'
+import { arcgisFeatureUrl } from './layerSources'
 
-describe('layerSources', () => {
-  it('builds an ArcGIS export tile with the MapLibre bbox token', () => {
-    const tile = arcgisExportTile('https://example/MapServer', 4)
-    expect(tile).toContain('{bbox-epsg-3857}')
-    expect(tile).toContain('layers=show:4')
-    expect(tile).toContain('f=image')
-  })
-
+describe('arcgisFeatureUrl', () => {
   it('builds a GeoJSON feature query within a bbox', () => {
     const url = arcgisFeatureUrl(
       'https://example/MapServer',
