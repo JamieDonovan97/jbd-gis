@@ -86,6 +86,7 @@ def to_web_mercator(src_path: Path, dest: Path) -> Path:
 
 def encode_terrain_rgb(dem: Path, dest: Path, min_zoom: int, max_zoom: int) -> Path:
     """Tile a Web Mercator DEM into Mapbox Terrain-RGB, written as MBTiles."""
+    dest.unlink(missing_ok=True)  # start fresh; SQLite would otherwise append to a prior run
     with rasterio.open(dem) as src:
         # One safe geographic transform (densify_pts >= 2) to bound the tile set.
         west, south, east, north = transform_bounds(
@@ -106,6 +107,7 @@ def to_pmtiles(mbtiles: Path, dest: Path, max_zoom: int) -> Path:
     """Pack an MBTiles archive into a single PMTiles file."""
     from pmtiles.convert import mbtiles_to_pmtiles
 
+    dest.unlink(missing_ok=True)
     mbtiles_to_pmtiles(str(mbtiles), str(dest), max_zoom)  # type: ignore[no-untyped-call]
     return dest
 

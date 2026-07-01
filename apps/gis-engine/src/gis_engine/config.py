@@ -16,12 +16,14 @@ class R2Config:
     bucket: str
     access_key: str
     secret_key: str
+    public_base_url: str | None = None
 
     @classmethod
     def from_env(cls) -> R2Config | None:
-        """Build from environment, or None if any variable is unset."""
+        """Build from environment, or None if a required variable is unset."""
         values = [os.environ.get(key) for key in _R2_KEYS]
         if not all(values):
             return None
         endpoint, bucket, access_key, secret_key = values
-        return cls(endpoint, bucket, access_key, secret_key)  # type: ignore[arg-type]
+        public = os.environ.get("R2_PUBLIC_BASE_URL")
+        return cls(endpoint, bucket, access_key, secret_key, public)  # type: ignore[arg-type]

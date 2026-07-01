@@ -79,4 +79,7 @@ def build_terrain(
 
 def main() -> None:
     """Console-script entry point."""
+    from dotenv import find_dotenv, load_dotenv
+
+    load_dotenv(find_dotenv(usecwd=True))
     app()
