@@ -8,7 +8,7 @@ open a PR, and merge back once CI is green.
 ```
 main ──┐
        ├─ feat/layers-endpoint ──► PR ──► squash-merge ──► main
-       └─ fix/nginx-timeout    ──► PR ──► squash-merge ──► main
+       └─ fix/geocode-timeout  ──► PR ──► squash-merge ──► main
 ```
 
 ## Branch names
@@ -54,6 +54,8 @@ scheme (Nerdbank.GitVersioning). The API exposes the running build at `/api/vers
 dotnet build apps/gis-api -c Release
 # Web
 cd apps/gis-web && npm run format:check && npm run lint && npm run typecheck && npm run test && npm run build
+# Engine
+cd apps/gis-engine && uv run ruff format --check && uv run ruff check && uv run mypy && uv run pytest
 ```
 
 Auto-fix formatting with `npm run format`; run tests in watch mode with `npm run test:watch`.
