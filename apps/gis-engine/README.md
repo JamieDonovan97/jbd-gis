@@ -4,7 +4,7 @@ The platform's offline batch tier — a Python 3.12 CLI. Runs a job to completio
 
 ## Jobs
 
-`build-terrain <archive.zip>` — a delivered DEM archive → Mapbox Terrain-RGB PMTiles, for MapLibre 3D terrain and contours. `--upload` publishes the result to R2 (reads `R2_ENDPOINT`, `R2_BUCKET`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`).
+`build-terrain <archive.zip>` — a delivered DEM archive → Mapbox Terrain-RGB PMTiles, for MapLibre 3D terrain and contours. `--upload` publishes the result to R2, reading `R2_ENDPOINT`, `R2_BUCKET`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY` (and optional `R2_PUBLIC_BASE_URL`, the domain the frontend fetches from) — from the environment or a local `.env`.
 
 ### Pipeline
 

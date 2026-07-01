@@ -10,7 +10,12 @@ from .config import R2Config
 
 
 def upload(path: Path, key: str, cfg: R2Config) -> str:
-    """Upload a file to the R2 bucket and return its object URL."""
+    """Upload a file to the R2 bucket.
+
+    Returns the public URL when ``public_base_url`` is configured (what the
+    frontend fetches), otherwise an ``s3://`` reference — the S3 endpoint itself
+    is auth-only and never publicly readable.
+    """
     client = boto3.client(
         "s3",
         endpoint_url=cfg.endpoint,
@@ -24,4 +29,6 @@ def upload(path: Path, key: str, cfg: R2Config) -> str:
         key,
         ExtraArgs={"ContentType": "application/octet-stream"},
     )
-    return f"{cfg.endpoint}/{cfg.bucket}/{key}"
+    if cfg.public_base_url:
+        return f"{cfg.public_base_url.rstrip('/')}/{key}"
+    return f"s3://{cfg.bucket}/{key}"
