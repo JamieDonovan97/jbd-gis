@@ -1,7 +1,8 @@
-import { Moon, Sun } from 'lucide-react'
+import { Moon, Mountain, Sun } from 'lucide-react'
 import { GlassPanel } from '@/components/glass/GlassPanel'
 import { Button } from '@/components/ui/button'
 import { BASEMAPS } from '@/lib/map/basemaps'
+import { TERRAIN } from '@/lib/map/terrain'
 import { cn } from '@/lib/utils'
 import { useTheme } from '@/theme/useTheme'
 import { useGisStore } from '../store/gisStore'
@@ -12,6 +13,8 @@ export function ViewControls() {
   const toggleTheme = useTheme((s) => s.toggle)
   const basemapId = useGisStore((s) => s.basemapId)
   const setBasemap = useGisStore((s) => s.setBasemap)
+  const terrain3d = useGisStore((s) => s.terrain3d)
+  const toggleTerrain3d = useGisStore((s) => s.toggleTerrain3d)
 
   return (
     <div className="flex items-center gap-2">
@@ -47,6 +50,21 @@ export function ViewControls() {
           )
         })}
       </GlassPanel>
+
+      {TERRAIN && (
+        <GlassPanel className="p-1">
+          <Button
+            variant="ghost"
+            size="icon"
+            aria-label="Toggle 3D terrain"
+            aria-pressed={terrain3d}
+            onClick={toggleTerrain3d}
+            className={cn(terrain3d && 'text-accent')}
+          >
+            <Mountain />
+          </Button>
+        </GlassPanel>
+      )}
     </div>
   )
 }
