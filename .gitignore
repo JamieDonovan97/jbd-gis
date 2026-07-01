@@ -9,6 +9,21 @@ dotnet/
 apps/gis-web/node_modules/
 apps/gis-web/dist/
 
+# Python
+apps/gis-engine/.venv/
+apps/gis-engine/*.egg-info/
+apps/gis-engine/dist/
+__pycache__/
+*.pyc
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Geospatial data — delivered archives and engine I/O (never committed)
+/*.zip
+apps/gis-engine/data/
+*.pmtiles
+
 # Environment
 .env
 .env.local

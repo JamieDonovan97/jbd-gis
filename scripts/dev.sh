@@ -18,10 +18,6 @@ case "${1:-help}" in
     echo "Starting frontend (Vite)..."
     cd "$ROOT/apps/gis-web" && npm run dev
     ;;
-  up)
-    echo "Starting full stack via Docker..."
-    cd "$ROOT" && $COMPOSE up --build
-    ;;
   down)
     cd "$ROOT" && $COMPOSE down
     ;;
@@ -32,6 +28,6 @@ case "${1:-help}" in
     echo "Done — docs/structure.md will now auto-update on commit."
     ;;
   *)
-    echo "Usage: ./scripts/dev.sh [setup|db|api|web|up|down]"
+    echo "Usage: ./scripts/dev.sh [setup|db|api|web|down]"
     ;;
 esac

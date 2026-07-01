@@ -1,9 +1,8 @@
 # workflows
 
-CI pipelines triggered on push to `main` and on pull requests targeting `main`.
+| Workflow | Trigger | Jobs |
+|---|---|---|
+| `ci.yml` | push to `main`, PRs to `main` | **api** — restore, build &nbsp;·&nbsp; **web** — format, lint, typecheck, test, build &nbsp;·&nbsp; **engine** — format, lint, typecheck, test &nbsp;·&nbsp; **docker** — validate compose config, build engine image |
+| `deploy.yml` | push to `main` | **pages** — build `gis-web` and deploy to Cloudflare Pages; a no-op until the Cloudflare secrets exist |
 
-| Workflow | Jobs |
-|---|---|
-| `ci.yml` | **api** — restore, build &nbsp;·&nbsp; **web** — lint, typecheck, build &nbsp;·&nbsp; **docker** — validate compose config |
-
-All three jobs must pass before a PR can merge. The `docker` job runs after `api` and `web`.
+Every `ci.yml` job must pass before a PR can merge; `docker` runs after `api`, `web`, and `engine`.

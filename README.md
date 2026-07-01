@@ -1,77 +1,22 @@
 # jbd-gis
 
-Geospatial platform for civil infrastructure data — PostGIS spatial queries, ASP.NET Core 10 API, React SPA.
+Geospatial platform for civil infrastructure data. A full-screen web map over PostGIS, with computation split across a request-time service and an offline batch tier.
 
-> **Status: early.** The web client — a full-screen map with a layered UI, reading layer data directly from external GIS services — is built. The API is minimal (health, version); PostGIS is used only where we store data or run server-side logic.
+| Tier | Deployable | Stack | Host |
+|---|---|---|---|
+| Client | [`gis-web`](apps/gis-web/) | React 19, TypeScript, Vite, Tailwind v4 | Cloudflare Pages |
+| Managed backend | Supabase | PostgreSQL 16 + PostGIS | Supabase |
+| Request-time service | [`gis-api`](apps/gis-api/) | ASP.NET Core 10, C# | Fly.io |
+| Offline batch | [`gis-engine`](apps/gis-engine/) | Python 3.12, Typer | Fly Machines |
 
-## Stack
+The client reads owned data from Supabase and public layer data straight from source. `gis-api` handles live per-request work (a stub today); `gis-engine` runs offline batch jobs. How work splits across the tiers: [ADR-005](docs/adr/005-compute-placement.md).
 
-| Layer | Technology |
-|---|---|
-| Frontend | React 19, TypeScript, Vite 8, Tailwind v4 |
-| Backend | ASP.NET Core 10, C# |
-| Database | PostgreSQL 16 + PostGIS |
-| Proxy | Nginx |
-| Infra | Docker Compose |
-| CI/CD | GitHub Actions |
+## Layout
 
-## Repository layout
-
-```
-/
-├── .github/workflows/   CI pipelines
-├── apps/
-│   ├── gis-api/         ASP.NET Core Web API
-│   └── gis-web/         React + Vite frontend
-├── docs/
-│   ├── adr/             Architecture Decision Records
-│   └── architecture.md  System overview
-├── infra/               Docker Compose, Nginx config
-└── scripts/             Developer utility scripts
-```
-
-## Prerequisites
-
-- Docker + Docker Compose v2
-- .NET 10 SDK (local API development)
-- Node 20+ (local frontend development)
-
-## Getting started
-
-```bash
-cp .env.example .env
-./scripts/dev.sh setup   # one-time per clone: enables the git hook that keeps docs/structure.md in sync
-```
-
-### Local development
-
-Run each service in a separate terminal:
-
-```bash
-./scripts/dev.sh db    # starts Postgres in Docker
-./scripts/dev.sh api   # dotnet watch run
-./scripts/dev.sh web   # npm run dev
-```
-
-Frontend: `http://localhost:5173`
-API: `http://localhost:8080`
-OpenAPI schema: `http://localhost:8080/openapi/v1.json`
-
-### Full stack via Docker
-
-```bash
-docker compose -f infra/docker-compose.yml up --build
-```
-
-Services are routed through Nginx at `http://localhost:80`.
-
-## Deployment
-
-`gis-web` builds in CI and deploys to Cloudflare Pages via Direct Upload on push to `main` ([`deploy.yml`](.github/workflows/deploy.yml)). `gis-api` (Fly.io) and Supabase are not yet deployed — see [architecture.md](docs/architecture.md).
+`apps/` holds the deployables, `docs/` the architecture and ADRs, `infra/` local orchestration, `scripts/` developer utilities. Full tree: [docs/structure.md](docs/structure.md).
 
 ## Docs
 
-- [Architecture overview](docs/architecture.md)
-- [ADR-001 — Monorepo structure](docs/adr/001-monorepo-structure.md)
-- [ADR-002 — Tech stack](docs/adr/002-tech-stack.md)
-- [ADR-003 — Infrastructure layout](docs/adr/003-infra-layout.md)
+- [Architecture](docs/architecture.md) — topology and tiers
+- [ADRs](docs/adr/) — decisions, in order
+- [CONTRIBUTING](CONTRIBUTING.md) — workflow, branches, and the commands to run each unit
