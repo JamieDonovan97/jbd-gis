@@ -22,6 +22,8 @@ export const TERRAIN: TerrainConfig | null = url
       encoding: 'mapbox', // matches the engine's Mapbox Terrain-RGB output
       tileSize: 256, // matches the engine's 256 px tiles
       maxzoom: 15,
-      exaggeration: 1.5,
+      // Brisbane's CBD is nearly flat (~0–80 m over kilometres); real relief
+      // needs heavy exaggeration to read on the web map.
+      exaggeration: 3,
     }
   : null
