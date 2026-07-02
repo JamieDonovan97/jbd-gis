@@ -6,6 +6,7 @@ import { InspectorPanel } from './components/InspectorPanel'
 import { MapCanvas } from './components/MapCanvas'
 import { MapControls } from './components/MapControls'
 import { MapLayers } from './components/MapLayers'
+import { TerrainLayer } from './components/TerrainLayer'
 import { ToolDock } from './components/ToolDock'
 import { ViewControls } from './components/ViewControls'
 import { useGisStore } from './store/gisStore'
@@ -30,6 +31,7 @@ export function GisView() {
     <MapProvider>
       <div className="relative h-full w-full overflow-hidden">
         <MapCanvas mapStyle={mapStyle} onSelect={selectFeature}>
+          <TerrainLayer />
           <MapLayers />
         </MapCanvas>
 

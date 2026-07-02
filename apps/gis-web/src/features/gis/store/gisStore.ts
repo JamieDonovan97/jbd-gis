@@ -16,6 +16,7 @@ interface GisState {
   basemapId: BasemapId
   layerVisibility: Record<string, boolean>
   layerOpacity: Record<string, number>
+  terrain3d: boolean
 
   toggleTool: (tool: ToolId) => void
   closeTool: () => void
@@ -24,6 +25,7 @@ interface GisState {
   toggleLayer: (id: string) => void
   setLayerOpacity: (id: string, value: number) => void
   toggleGroup: (groupId: string) => void
+  toggleTerrain3d: () => void
 }
 
 const initialVisibility = Object.fromEntries(
@@ -41,6 +43,7 @@ export const useGisStore = create<GisState>((set, get) => ({
   basemapId: DEFAULT_BASEMAP,
   layerVisibility: initialVisibility,
   layerOpacity: initialOpacity,
+  terrain3d: false,
 
   toggleTool: (tool) =>
     set({ activeTool: get().activeTool === tool ? null : tool }),
@@ -65,4 +68,5 @@ export const useGisStore = create<GisState>((set, get) => ({
       for (const layer of group.layers) layerVisibility[layer.id] = !allOn
       return { layerVisibility }
     }),
+  toggleTerrain3d: () => set((s) => ({ terrain3d: !s.terrain3d })),
 }))

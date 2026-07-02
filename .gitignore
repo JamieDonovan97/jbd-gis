@@ -9,6 +9,9 @@ dotnet/
 apps/gis-web/node_modules/
 apps/gis-web/dist/
 
+# Wrangler (Cloudflare CLI local cache)
+.wrangler/
+
 # Python
 apps/gis-engine/.venv/
 apps/gis-engine/*.egg-info/
